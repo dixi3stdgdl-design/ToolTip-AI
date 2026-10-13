@@ -379,8 +379,28 @@
       hud.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
     }, { passive: true });
   }
-  /* ---------- Analytics & Telemetry (Microsoft Clarity + Azure) ---------- */
+  /* ---------- Analytics & Telemetry (Google Analytics + Clarity + Azure) ---------- */
   (function initTelemetry() {
+    /* Initialize Google Analytics if not already loaded in <head> */
+    try {
+      if (typeof window !== 'undefined' && !window.gtag) {
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function(){ window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('config', 'G-WSGPY3DK4Z');
+
+        var gs = document.createElement('script');
+        gs.async = true;
+        gs.src = 'https://www.googletagmanager.com/gtag/js?id=G-WSGPY3DK4Z';
+        var firstScript = document.getElementsByTagName('script')[0];
+        if (firstScript && firstScript.parentNode) {
+          firstScript.parentNode.insertBefore(gs, firstScript);
+        } else if (document.head) {
+          document.head.appendChild(gs);
+        }
+      }
+    } catch (_) {}
+
     /* Initialize Clarity if not already loaded in <head> */
     try {
       if (typeof window !== 'undefined' && !window.clarity) {
@@ -395,6 +415,13 @@
     var endpoint = 'https://mexicocentral-0.in.applicationinsights.azure.com/v2/track';
     var k = '680724c1-2840-4ce4-9780-e9ccd5062f9d';
     function sendTelemetry(name, props) {
+      /* Send event to Google Analytics */
+      if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+        try {
+          window.gtag('event', name, props || {});
+        } catch (_) {}
+      }
+
       /* Send event to Microsoft Clarity */
       if (typeof window !== 'undefined' && typeof window.clarity === 'function') {
         try {
