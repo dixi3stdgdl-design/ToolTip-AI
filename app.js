@@ -379,11 +379,37 @@
       hud.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
     }, { passive: true });
   }
-  /* ---------- Azure Application Insights Telemetry ---------- */
+  /* ---------- Analytics & Telemetry (Microsoft Clarity + Azure) ---------- */
   (function initTelemetry() {
+    /* Initialize Clarity if not already loaded in <head> */
+    try {
+      if (typeof window !== 'undefined' && !window.clarity) {
+        (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "yx9lgph0yh");
+      }
+    } catch (_) {}
+
     var endpoint = 'https://mexicocentral-0.in.applicationinsights.azure.com/v2/track';
     var k = '680724c1-2840-4ce4-9780-e9ccd5062f9d';
     function sendTelemetry(name, props) {
+      /* Send event to Microsoft Clarity */
+      if (typeof window !== 'undefined' && typeof window.clarity === 'function') {
+        try {
+          window.clarity("event", name);
+          if (props && typeof props === 'object') {
+            for (var pk in props) {
+              if (Object.prototype.hasOwnProperty.call(props, pk) && typeof props[pk] === 'string') {
+                window.clarity("set", pk, props[pk]);
+              }
+            }
+          }
+        } catch (_) {}
+      }
+
+      /* Azure Application Insights fallback */
       try {
         var payload = {
           name: 'Microsoft.ApplicationInsights.Event',
@@ -398,10 +424,23 @@
             }
           }
         };
-        if (navigator.sendBeacon) {
-          navigator.sendBeacon(endpoint, JSON.stringify(payload));
-        } else {
-          fetch(endpoint, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'application/json' }, keepalive: true }).catch(function(){});
+        var json = JSON.stringify(payload);
+        var sent = false;
+        if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function' && typeof Blob !== 'undefined') {
+          try {
+            var blob = new Blob([json], { type: 'application/json' });
+            sent = navigator.sendBeacon(endpoint, blob);
+          } catch (_) {
+            sent = false;
+          }
+        }
+        if (!sent && typeof fetch === 'function') {
+          fetch(endpoint, {
+            method: 'POST',
+            body: json,
+            headers: { 'Content-Type': 'application/json' },
+            keepalive: true
+          }).catch(function(){});
         }
       } catch (e) {}
     }
@@ -417,6 +456,12 @@
     document.querySelectorAll('a[href*=".msix"], a[href*=".exe"]').forEach(function(el) {
       el.addEventListener('click', function() {
         sendTelemetry('Click_DownloadInstaller', { file: el.href });
+      });
+    });
+
+    document.querySelectorAll('[data-buy]').forEach(function(el) {
+      el.addEventListener('click', function() {
+        sendTelemetry('Click_BuyButton', { plan: el.getAttribute('data-buy') || 'unknown' });
       });
     });
   })();
