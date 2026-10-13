@@ -213,6 +213,9 @@
       product: 'Bridge',
       total: '9.99 USD',
       url: 'https://paypal.me/DixLqb/9.99',
+      storeId: '9PN1B2M4N7DK',
+      storeUri: 'ms-windows-store://pdp/?productid=9PN1B2M4N7DK',
+      storeWeb: 'https://apps.microsoft.com/detail/9PN1B2M4N7DK',
       downloads: [
         { label: 'Companion Android (APK)', href: '/downloads/ToolTipAIBridge.apk' }
       ],

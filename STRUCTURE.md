@@ -1,4 +1,4 @@
-﻿# Estructura del repo — ToolTip AI
+# Estructura del repo — ToolTip AI
 
 Reorganizado el 28/09/2026. Esta es la estructura **real** en disco.
 
@@ -88,4 +88,6 @@ ToolTip AI Translate\
 | Aura | `9P33P1P5Z8DC` | `D:\ToolTip AI Aura` |
 | Translate | `9NQN3RZ2Z655` | `D:\ToolTip AI Translate` |
 | Voice | `9P417GZB0FVB` | `D:\ToolTip AI Voice` |
+| Bridge | `9PN1B2M4N7DK` | `D:\ToolTip AI Bridge` |
+
 
