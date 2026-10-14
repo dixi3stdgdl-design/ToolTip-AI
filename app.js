@@ -321,6 +321,70 @@
       '</div>';
   }
 
+  /* ---------- Analytics & Telemetry Engine (GA4 + Clarity + Azure) ---------- */
+  var endpoint = 'https://mexicocentral-0.in.applicationinsights.azure.com/v2/track';
+  var k = '680724c1-2840-4ce4-9780-e9ccd5062f9d';
+
+  function sendTelemetry(name, props) {
+    props = props || {};
+    props.timestamp = new Date().toISOString();
+    props.page_path = window.location.pathname;
+
+    /* 1. Google Analytics 4 (gtag) */
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      try {
+        window.gtag('event', name, props);
+      } catch (_) {}
+    }
+
+    /* 2. Microsoft Clarity */
+    if (typeof window !== 'undefined' && typeof window.clarity === 'function') {
+      try {
+        window.clarity("event", name);
+        for (var pk in props) {
+          if (Object.prototype.hasOwnProperty.call(props, pk) && typeof props[pk] === 'string') {
+            window.clarity("set", pk, props[pk]);
+          }
+        }
+      } catch (_) {}
+    }
+
+    /* 3. Azure Application Insights */
+    try {
+      var payload = {
+        name: 'Microsoft.ApplicationInsights.Event',
+        time: props.timestamp,
+        iKey: k,
+        data: {
+          baseType: 'EventData',
+          baseData: {
+            ver: 2,
+            name: name,
+            properties: props
+          }
+        }
+      };
+      var json = JSON.stringify(payload);
+      var sent = false;
+      if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function' && typeof Blob !== 'undefined') {
+        try {
+          var blob = new Blob([json], { type: 'application/json' });
+          sent = navigator.sendBeacon(endpoint, blob);
+        } catch (_) {
+          sent = false;
+        }
+      }
+      if (!sent && typeof fetch === 'function') {
+        fetch(endpoint, {
+          method: 'POST',
+          body: json,
+          headers: { 'Content-Type': 'application/json' },
+          keepalive: true
+        }).catch(function(){});
+      }
+    } catch (_) {}
+  }
+
   function openCk(key) {
     current = catalog[key] || catalog.bundle;
     ckTitle.textContent = current.title;
@@ -347,17 +411,36 @@
     }
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
+
+    var priceNum = parseFloat((current.total || '0').replace(/[^0-9.]/g, '')) || 0;
+    sendTelemetry('view_item', {
+      item_id: key,
+      item_name: current.product,
+      value: priceNum,
+      currency: 'USD'
+    });
   }
 
   ckPay.addEventListener('click', function () {
     if (!current.url) {
+      sendTelemetry('click_free_download_options', { product: current.product });
       renderDl(current.downloads);
       return;
     }
     if (current.delivery === 'team') {
+      sendTelemetry('click_team_sales', { product: current.product });
       window.location.href = current.url;
       return;
     }
+
+    var priceNum = parseFloat((current.total || '0').replace(/[^0-9.]/g, '')) || 0;
+    sendTelemetry('begin_checkout', {
+      currency: 'USD',
+      value: priceNum,
+      item_name: current.product,
+      checkout_url: current.url
+    });
+
     var w = 520, h = 720;
     window.open(
       current.url,
@@ -379,117 +462,46 @@
       hud.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
     }, { passive: true });
   }
-  /* ---------- Analytics & Telemetry (Google Analytics + Clarity + Azure) ---------- */
-  (function initTelemetry() {
-    /* Initialize Google Analytics if not already loaded in <head> */
-    try {
-      if (typeof window !== 'undefined' && !window.gtag) {
-        window.dataLayer = window.dataLayer || [];
-        window.gtag = function(){ window.dataLayer.push(arguments); };
-        window.gtag('js', new Date());
-        window.gtag('config', 'G-WSGPY3DK4Z');
 
-        var gs = document.createElement('script');
-        gs.async = true;
-        gs.src = 'https://www.googletagmanager.com/gtag/js?id=G-WSGPY3DK4Z';
-        var firstScript = document.getElementsByTagName('script')[0];
-        if (firstScript && firstScript.parentNode) {
-          firstScript.parentNode.insertBefore(gs, firstScript);
-        } else if (document.head) {
-          document.head.appendChild(gs);
-        }
-      }
-    } catch (_) {}
+  /* ---------- Dynamic Event Delegation for Downloads, Store, and Clicks ---------- */
+  sendTelemetry('page_view', { path: location.pathname, referrer: document.referrer });
 
-    /* Initialize Clarity if not already loaded in <head> */
-    try {
-      if (typeof window !== 'undefined' && !window.clarity) {
-        (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-        })(window, document, "clarity", "script", "yx9lgph0yh");
-      }
-    } catch (_) {}
+  document.addEventListener('click', function(e) {
+    var target = e.target;
 
-    var endpoint = 'https://mexicocentral-0.in.applicationinsights.azure.com/v2/track';
-    var k = '680724c1-2840-4ce4-9780-e9ccd5062f9d';
-    function sendTelemetry(name, props) {
-      /* Send event to Google Analytics */
-      if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
-        try {
-          window.gtag('event', name, props || {});
-        } catch (_) {}
-      }
-
-      /* Send event to Microsoft Clarity */
-      if (typeof window !== 'undefined' && typeof window.clarity === 'function') {
-        try {
-          window.clarity("event", name);
-          if (props && typeof props === 'object') {
-            for (var pk in props) {
-              if (Object.prototype.hasOwnProperty.call(props, pk) && typeof props[pk] === 'string') {
-                window.clarity("set", pk, props[pk]);
-              }
-            }
-          }
-        } catch (_) {}
-      }
-
-      /* Azure Application Insights fallback */
-      try {
-        var payload = {
-          name: 'Microsoft.ApplicationInsights.Event',
-          time: new Date().toISOString(),
-          iKey: k,
-          data: {
-            baseType: 'EventData',
-            baseData: {
-              ver: 2,
-              name: name,
-              properties: props || {}
-            }
-          }
-        };
-        var json = JSON.stringify(payload);
-        var sent = false;
-        if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function' && typeof Blob !== 'undefined') {
-          try {
-            var blob = new Blob([json], { type: 'application/json' });
-            sent = navigator.sendBeacon(endpoint, blob);
-          } catch (_) {
-            sent = false;
-          }
-        }
-        if (!sent && typeof fetch === 'function') {
-          fetch(endpoint, {
-            method: 'POST',
-            body: json,
-            headers: { 'Content-Type': 'application/json' },
-            keepalive: true
-          }).catch(function(){});
-        }
-      } catch (e) {}
+    /* Detect file downloads (.msix, .exe, .apk or [download] attribute) */
+    var dl = target.closest('a[download], a[href*=".msix"], a[href*=".exe"], a[href*=".apk"]');
+    if (dl) {
+      var href = dl.getAttribute('href') || '';
+      var filename = href.split('/').pop().split('?')[0];
+      var ext = filename.split('.').pop();
+      sendTelemetry('file_download', {
+        file_name: filename,
+        file_extension: ext,
+        link_url: dl.href,
+        product: (current && current.product) ? current.product : 'Assistant'
+      });
+      return;
     }
 
-    sendTelemetry('Web_PageView', { path: location.pathname, referrer: document.referrer });
-
-    document.querySelectorAll('a[href*="apps.microsoft.com"], a[href*="ms-windows-store"]').forEach(function(el) {
-      el.addEventListener('click', function() {
-        sendTelemetry('Click_StoreListing', { target: el.href });
+    /* Detect Microsoft Store clicks */
+    var st = target.closest('a[href*="apps.microsoft.com"], a[href*="ms-windows-store"]');
+    if (st) {
+      sendTelemetry('select_item', {
+        item_list_name: 'Microsoft Store',
+        link_url: st.href,
+        product: (current && current.product) ? current.product : 'Assistant'
       });
-    });
+      return;
+    }
 
-    document.querySelectorAll('a[href*=".msix"], a[href*=".exe"]').forEach(function(el) {
-      el.addEventListener('click', function() {
-        sendTelemetry('Click_DownloadInstaller', { file: el.href });
+    /* Detect plan / buy button clicks */
+    var buy = target.closest('[data-buy]');
+    if (buy) {
+      sendTelemetry('select_promotion', {
+        plan: buy.getAttribute('data-buy') || 'unknown'
       });
-    });
-
-    document.querySelectorAll('[data-buy]').forEach(function(el) {
-      el.addEventListener('click', function() {
-        sendTelemetry('Click_BuyButton', { plan: el.getAttribute('data-buy') || 'unknown' });
-      });
-    });
-  })();
+    }
+  });
 })();
+
