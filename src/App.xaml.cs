@@ -73,8 +73,8 @@ public partial class App : System.Windows.Application
         int currentPid = Environment.ProcessId;
         try
         {
-            var processes = System.Diagnostics.Process.GetProcessesByName("TeachMeAI")
-                .Concat(System.Diagnostics.Process.GetProcessesByName("ToolTipAI"))
+            var processes = System.Diagnostics.Process.GetProcessesByName("ToolTipAI")
+                .Concat(System.Diagnostics.Process.GetProcessesByName("ToolTipAIAssistant"))
                 .Concat(System.Diagnostics.Process.GetProcessesByName("ToolTipAITranslate"));
 
             foreach (var p in processes)

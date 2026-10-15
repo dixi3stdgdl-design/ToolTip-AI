@@ -9,7 +9,6 @@ namespace ToolTipAI;
 public static class StartupManager
 {
     private const string RunKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
-    private const string AppName = "ToolTipAI";
 
     private static string GetConfigPath()
     {
@@ -19,15 +18,64 @@ public static class StartupManager
         return Path.Combine(folder, "config.json");
     }
 
+    private static readonly string[] AppRunKeys = new[]
+    {
+        "ToolTipAI",
+        "ToolTipAIBridge",
+        "ToolTipAITranslate",
+        "ToolTipAIAssistant",
+        "ToolTipAIAura",
+        "ToolTipAIVoice",
+        "ToolTipAIWindowsCompanion",
+        "TeachMeAI"
+    };
+
     /// <summary>
     /// Remueve cualquier entrada de autoarranque con Windows para asegurar que NUNCA inicie solo al prender la PC.
+    /// Cubre todas las aplicaciones, extensiones y puentes de la suite ToolTip AI.
     /// </summary>
     public static void EnsureNoWindowsStartup()
     {
+        // 1. Limpieza en HKCU Run
         try
         {
             using var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, true);
-            key?.DeleteValue(AppName, false);
+            if (key != null)
+            {
+                foreach (var appName in AppRunKeys)
+                {
+                    try { key.DeleteValue(appName, false); } catch { }
+                }
+            }
+        }
+        catch { }
+
+        // 2. Limpieza en HKLM Run (si hay permisos)
+        try
+        {
+            using var localKey = Registry.LocalMachine.OpenSubKey(RunKeyPath, true);
+            if (localKey != null)
+            {
+                foreach (var appName in AppRunKeys)
+                {
+                    try { localKey.DeleteValue(appName, false); } catch { }
+                }
+            }
+        }
+        catch { }
+
+        // 3. Limpieza en la carpeta de inicio de Windows (Startup folder)
+        try
+        {
+            string userStartup = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+            if (Directory.Exists(userStartup))
+            {
+                var files = Directory.GetFiles(userStartup, "*ToolTip*.*");
+                foreach (var f in files)
+                {
+                    try { File.Delete(f); } catch { }
+                }
+            }
         }
         catch { }
     }
