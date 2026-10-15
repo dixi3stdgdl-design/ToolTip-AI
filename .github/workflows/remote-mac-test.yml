@@ -60,9 +60,8 @@ jobs:
 
       - name: Setup noVNC Web Gateway & Cloudflare Tunnel
         run: |
-          # Clonar interfaz web noVNC y levantar websockify hacia VNC local (5900)
           git clone --depth 1 https://github.com/novnc/noVNC.git /tmp/noVNC
-          python3 -m pip install websockify
+          python3 -m pip install websockify --break-system-packages
           python3 -m websockify --web /tmp/noVNC 6080 localhost:5900 &
 
           # Instalar y levantar túnel de Cloudflare hacia noVNC
