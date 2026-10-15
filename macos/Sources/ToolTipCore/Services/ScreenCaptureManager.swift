@@ -5,6 +5,7 @@ import AppKit
 public final class ScreenCaptureManager: NSObject, Sendable {
     public static let shared = ScreenCaptureManager()
 
+    @MainActor
     public func captureMainDisplay() async -> (base64Image: String, image: NSImage)? {
         do {
             let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)

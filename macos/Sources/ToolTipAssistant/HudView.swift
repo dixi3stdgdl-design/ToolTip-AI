@@ -1,4 +1,5 @@
 import SwiftUI
+import ToolTipCore
 
 public struct HudView: View {
     public let data: InspectionData
