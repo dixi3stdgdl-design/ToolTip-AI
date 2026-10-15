@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>com.dixi3labs.tooltipai.dashboard</string>
+    <key>CFBundleName</key>
+    <string>ToolTip Dashboard</string>
+    <key>CFBundleDisplayName</key>
+    <string>ToolTip Dashboard</string>
+    <key>CFBundleExecutable</key>
+    <string>ToolTipDashboard</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>14.0</string>
+    <key>LSUIElement</key>
+    <false/>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>com.dixi3labs.tooltipai.suite</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>tooltip-suite</string>
+            </array>
+        </dict>
+    </array>
+</dict>
+</plist>

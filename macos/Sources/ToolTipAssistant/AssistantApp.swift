@@ -1,12 +1,13 @@
 import SwiftUI
 import AppKit
+import ToolTipCore
 
 @main
-struct ToolTipMacApp: App {
-    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+struct ToolTipAssistantApp: App {
+    @NSApplicationDelegateAdaptor(AssistantAppDelegate.self) var appDelegate
 
     var body: some Scene {
-        MenuBarExtra("ToolTip AI", systemImage: "sparkle.magnifyingglass") {
+        MenuBarExtra("ToolTip Assistant", systemImage: "sparkle.magnifyingglass") {
             Button("Inspeccionar Pantalla (⌘ + Shift + A)") {
                 appDelegate.triggerInspection()
             }
@@ -14,34 +15,33 @@ struct ToolTipMacApp: App {
 
             Divider()
 
-            Button("Ajustes & API Key...") {
-                appDelegate.openSettings()
-            }
-
-            Divider()
-
-            Button("Salir de ToolTip AI") {
+            Button("Cerrar Assistant") {
                 NSApplication.shared.terminate(nil)
             }
         }
     }
 }
 
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AssistantAppDelegate: NSObject, NSApplicationDelegate {
     private var hudPanel: NSPanel?
-    private var settingsWindow: NSWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Registrar atajo global sin pedir permisos de accesibilidad
         GlobalHotkeyManager.shared.register { [weak self] in
             self?.triggerInspection()
         }
     }
 
+    func application(_ application: NSApplication, open urls: [URL]) {
+        for url in urls {
+            if url.scheme == "tooltip-assistant" {
+                triggerInspection()
+            }
+        }
+    }
+
     func triggerInspection() {
         Task { @MainActor in
-            guard let apiKey = KeychainVault.loadApiKey(), !apiKey.isEmpty else {
-                openSettings()
+            guard let apiKey = AppGroupCoordinator.shared.getSharedApiKey(), !apiKey.isEmpty else {
                 return
             }
 
@@ -86,7 +86,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         hudPanel?.contentView = NSHostingView(rootView: hudView)
 
-        // Centrar HUD en la pantalla principal o cerca del cursor
         if let screen = NSScreen.main {
             let screenRect = screen.visibleFrame
             let x = screenRect.midX - 220
@@ -95,22 +94,5 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         hudPanel?.orderFrontRegardless()
-    }
-
-    func openSettings() {
-        if settingsWindow == nil {
-            let window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 480, height: 320),
-                styleMask: [.titled, .closable],
-                backing: .buffered,
-                defer: false
-            )
-            window.title = "Ajustes de ToolTip AI"
-            window.center()
-            window.contentView = NSHostingView(rootView: SettingsView())
-            self.settingsWindow = window
-        }
-        settingsWindow?.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
     }
 }

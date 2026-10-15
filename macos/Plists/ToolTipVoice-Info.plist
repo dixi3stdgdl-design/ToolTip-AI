@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>com.dixi3labs.tooltipai.voice</string>
+    <key>CFBundleName</key>
+    <string>ToolTip Voice</string>
+    <key>CFBundleDisplayName</key>
+    <string>ToolTip Voice</string>
+    <key>CFBundleExecutable</key>
+    <string>ToolTipVoice</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>14.0</string>
+    <key>LSUIElement</key>
+    <true/>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>ToolTip Voice requiere acceso al micrófono para dictado por voz y transcripción neuronal.</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>ToolTip Voice requiere reconocimiento de voz para convertir tu habla en texto y comandos.</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>com.dixi3labs.tooltipai.voice</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>tooltip-voice</string>
+            </array>
+        </dict>
+    </array>
+</dict>
+</plist>

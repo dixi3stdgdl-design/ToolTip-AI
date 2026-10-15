@@ -1,32 +1,33 @@
-# 🍏 ToolTip AI — macOS Edition
+# 🍏 ToolTip AI Suite — macOS Edition (Arquitectura Dual)
 
-**Cognitive Screen Inspector & Assisted Decision Engine for macOS**  
+**Cognitive Screen Inspector, Translation, Aura, Voice & Bridge Suite for macOS**  
 *Organización:* Dixi3 Labs  
-*Bundle Identifier:* `com.dixi3labs.tooltipai`  
+*App Group Identifier:* `group.com.dixi3labs.tooltipai`  
 *Target OS:* macOS 14.0+ (Apple Silicon & Intel)  
 
 ---
 
-## 🏗️ Arquitectura Técnica
+## 🏛️ Las 2 Vías de Distribución (Arquitectura Dual)
 
-1. **Lenguaje y UI:** Swift 5.9+ y SwiftUI nativo con `MenuBarExtra` y `NSPanel` flotante en material translúcido (`.ultraThinMaterial`).
-2. **Captura de Pantalla:** `ScreenCaptureKit` (`SCShareableContent`, `SCScreenshotManager`) con aceleración por hardware.
-3. **Atajo Global:** API Carbon (`RegisterEventHotKey`) activado por defecto con `Cmd + Shift + A` sin necesidad de permisos invasivos de Accesibilidad.
-4. **Criptografía de Credenciales:** `Security.framework` (Keychain nativo de macOS), reemplazo directo de Windows DPAPI.
-5. **Inferencia Cognitiva:** `GeminiClient` con autodetección de dominios (Audio/DAWs como Logic Pro/Ableton, Desarrollo en Xcode/VSCode, Navegación y Sistema).
+### 1. Vía 1: Suite Todo-en-Uno (`ToolTipDashboard.app`)
+* Contenedor maestro con el Cockpit de control central.
+* Contiene los 5 motores desacoplados en `Contents/Helpers/`.
+* Cumple al 100% con la Directriz 4.3 de Apple (Cero rechazos por spam).
+
+### 2. Vía 2: Los 5 Módulos Independientes (App Store Bundle)
+Cada herramienta se compila como su propio ejecutable `.app` independiente, comunicándose mediante el **App Group** (`group.com.dixi3labs.tooltipai`) y **Deep Links (URL Schemes)**:
+
+| Módulo | Bundle Identifier | URL Scheme | Función |
+| :--- | :--- | :--- | :--- |
+| **ToolTip Dashboard** | `com.dixi3labs.tooltipai.dashboard` | `tooltip-suite://` | Cockpit central y gestor de licencias |
+| **ToolTip Assistant** | `com.dixi3labs.tooltipai.assistant` | `tooltip-assistant://` | Inspector cognitivo en 4 cuadrantes |
+| **ToolTip Translate** | `com.dixi3labs.tooltipai.translate` | `tooltip-translate://` | Traductor flotante con OCR local Vision |
+| **ToolTip Aura** | `com.dixi3labs.tooltipai.aura` | `tooltip-aura://` | Resaltador contextual, cursor beam y dwell radar |
+| **ToolTip Voice** | `com.dixi3labs.tooltipai.voice` | `tooltip-voice://` | Dictado y síntesis auditiva TTS |
+| **ToolTip Bridge** | `com.dixi3labs.tooltipai.bridge` | `tooltip-bridge://` | Servidor local LAN para companion Android |
 
 ---
 
-## 🚀 Compilación en la Nube (GitHub Actions)
-
-Este módulo se compila automáticamente mediante GitHub Actions en cada `git push`:
-* **Runner:** `macos-14` (Apple Silicon M1/M2)
-* **Resultado:** Se genera el archivo `ToolTipAI-macOS-preview.zip` descargable directamente en la pestaña **Actions** de GitHub sin costo alguno.
-
----
-
-## 🔒 Privacidad y App Store Compliance
-
-* Cumple con los lineamientos de **App Sandbox** (`com.apple.security.app-sandbox`).
-* Declara `NSScreenCaptureUsageDescription` en `Info.plist`.
-* Cero almacenamiento de imágenes en servidores intermediarios (comunicación directa TLS 1.3 con Google Gemini APIs).
+## ⚡ Compilación
+Se compila en GitHub Actions (`runs-on: macos-14`) generando el paquete unificado:
+`ToolTipAI-macOS-Complete-Suite.zip`.

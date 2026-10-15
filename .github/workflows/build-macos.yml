@@ -1,4 +1,4 @@
-name: Build ToolTip AI macOS
+name: Build ToolTip AI macOS Suite
 
 on:
   push:
@@ -10,43 +10,52 @@ on:
 
 jobs:
   build:
-    name: Compile & Package macOS App
+    name: Compile & Package Complete macOS Suite
     runs-on: macos-14
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Show macOS and Swift Version
+      - name: Show macOS and Swift Tools
         run: |
           sw_vers
           swift --version
           xcodebuild -version
 
-      - name: Build ToolTip AI (Release)
+      - name: Build All 6 Suite Targets (Release)
         working-directory: macos
         run: |
           swift build -c release
 
-      - name: Bundle into ToolTipAI.app
+      - name: Assemble macOS App Bundles
         working-directory: macos
         run: |
-          mkdir -p ToolTipAI.app/Contents/MacOS
-          mkdir -p ToolTipAI.app/Contents/Resources
+          APPS=("ToolTipDashboard" "ToolTipAssistant" "ToolTipTranslate" "ToolTipAura" "ToolTipVoice" "ToolTipBridge")
 
-          # Copiar ejecutable compilado
-          cp .build/release/ToolTipAI ToolTipAI.app/Contents/MacOS/ToolTipAI
-          chmod +x ToolTipAI.app/Contents/MacOS/ToolTipAI
+          for APP in "${APPS[@]}"; do
+            echo "Assembler: Empaquetando $APP.app..."
+            mkdir -p "$APP.app/Contents/MacOS"
+            mkdir -p "$APP.app/Contents/Resources"
+            cp ".build/release/$APP" "$APP.app/Contents/MacOS/$APP"
+            chmod +x "$APP.app/Contents/MacOS/$APP"
+            cp "Plists/$APP-Info.plist" "$APP.app/Contents/Info.plist"
+          done
 
-          # Copiar Info.plist con Bundle ID
-          cp Info.plist ToolTipAI.app/Contents/Info.plist
+          # Embed Helpers inside ToolTipDashboard for Route 1 (Unified Container App)
+          mkdir -p "ToolTipDashboard.app/Contents/Helpers"
+          cp -R "ToolTipAssistant.app" "ToolTipDashboard.app/Contents/Helpers/"
+          cp -R "ToolTipTranslate.app" "ToolTipDashboard.app/Contents/Helpers/"
+          cp -R "ToolTipAura.app" "ToolTipDashboard.app/Contents/Helpers/"
+          cp -R "ToolTipVoice.app" "ToolTipDashboard.app/Contents/Helpers/"
+          cp -R "ToolTipBridge.app" "ToolTipDashboard.app/Contents/Helpers/"
 
-          # Comprimir preservando metadata de macOS
-          ditto -c -k --keepParent ToolTipAI.app ToolTipAI-macOS-preview.zip
+          # Empaquetar la suite completa con preservación de metadata
+          ditto -c -k ToolTipDashboard.app ToolTipAssistant.app ToolTipTranslate.app ToolTipAura.app ToolTipVoice.app ToolTipBridge.app ToolTipAI-macOS-Complete-Suite.zip
 
-      - name: Upload Build Artifact
+      - name: Upload Suite Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ToolTipAI-macOS-Preview
-          path: macos/ToolTipAI-macOS-preview.zip
+          name: ToolTipAI-macOS-Complete-Suite
+          path: macos/ToolTipAI-macOS-Complete-Suite.zip
           retention-days: 14
