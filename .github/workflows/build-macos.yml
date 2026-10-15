@@ -1,0 +1,52 @@
+name: Build ToolTip AI macOS
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'macos/**'
+      - '.github/workflows/build-macos.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Compile & Package macOS App
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Show macOS and Swift Version
+        run: |
+          sw_vers
+          swift --version
+          xcodebuild -version
+
+      - name: Build ToolTip AI (Release)
+        working-directory: macos
+        run: |
+          swift build -c release
+
+      - name: Bundle into ToolTipAI.app
+        working-directory: macos
+        run: |
+          mkdir -p ToolTipAI.app/Contents/MacOS
+          mkdir -p ToolTipAI.app/Contents/Resources
+
+          # Copiar ejecutable compilado
+          cp .build/release/ToolTipAI ToolTipAI.app/Contents/MacOS/ToolTipAI
+          chmod +x ToolTipAI.app/Contents/MacOS/ToolTipAI
+
+          # Copiar Info.plist con Bundle ID
+          cp Info.plist ToolTipAI.app/Contents/Info.plist
+
+          # Comprimir preservando metadata de macOS
+          ditto -c -k --keepParent ToolTipAI.app ToolTipAI-macOS-preview.zip
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ToolTipAI-macOS-Preview
+          path: macos/ToolTipAI-macOS-preview.zip
+          retention-days: 14

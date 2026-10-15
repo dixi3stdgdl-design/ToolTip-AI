@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>com.dixi3labs.tooltipai</string>
+    <key>CFBundleName</key>
+    <string>ToolTip AI</string>
+    <key>CFBundleDisplayName</key>
+    <string>ToolTip AI</string>
+    <key>CFBundleExecutable</key>
+    <string>ToolTipAI</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>14.0</string>
+    <key>LSUIElement</key>
+    <true/>
+    <key>NSScreenCaptureUsageDescription</key>
+    <string>ToolTip AI requiere acceso a la pantalla para inspeccionar elementos visuales y asistirte con inteligencia artificial en tiempo real.</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright © 2026 Dixi3 Labs. Todos los derechos reservados.</string>
+</dict>
+</plist>
