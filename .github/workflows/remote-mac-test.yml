@@ -51,7 +51,6 @@ jobs:
 
       - name: Configure macOS Screen Sharing (VNC)
         run: |
-          # Activar servicio de pantalla remota nativo con password ToolTip2026
           sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart \
             -activate -configure -access -on \
             -clientopts -setvnclegacy -vnclegacy yes \
@@ -64,11 +63,9 @@ jobs:
           python3 -m pip install websockify --break-system-packages
           python3 -m websockify --web /tmp/noVNC 6080 localhost:5900 &
 
-          # Instalar y levantar túnel de Cloudflare hacia noVNC
           brew install cloudflared
           cloudflared tunnel --url http://localhost:6080 > /tmp/tunnel.log 2>&1 &
           
-          # Esperar a que se asigne la URL pública
           sleep 10
           cat /tmp/tunnel.log
 
@@ -81,18 +78,19 @@ jobs:
             sleep 2
           done
 
-          echo ""
-          echo "=============================================================================="
-          echo "🍏 ¡TU MAC INTERACTIVO EN LA NUBE ESTÁ LISTO!"
-          echo "=============================================================================="
-          echo "Abre este enlace en tu navegador (Chrome / Edge / Firefox):"
-          echo ""
-          echo "👉  $TUNNEL_URL/vnc.html?autoconnect=true&resize=remote"
-          echo ""
-          echo "Contraseña de acceso VNC: ToolTip2026"
-          echo "=============================================================================="
-          echo ""
+          FULL_URL="$TUNNEL_URL/vnc.html?autoconnect=true&resize=remote"
+          echo "$FULL_URL" > session_url.txt
+          echo "### 🍏 Tu Mac en la nube está listo" >> $GITHUB_STEP_SUMMARY
+          echo "[Haz clic aquí para abrir macOS en tu navegador]($FULL_URL)" >> $GITHUB_STEP_SUMMARY
+          echo "Contraseña de acceso: **ToolTip2026**" >> $GITHUB_STEP_SUMMARY
 
-          # Mantener la sesión activa durante 55 minutos para que el usuario pueda probar
+      - name: Publish Session URL Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mac-Session-URL
+          path: session_url.txt
+
+      - name: Keep Interactive Session Alive (55 min)
+        run: |
           echo "Sesión interactiva activa. Presiona Cancelar en GitHub Actions cuando termines."
           sleep 3300
