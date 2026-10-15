@@ -1,0 +1,99 @@
+name: Remote Mac Interactive Sandbox (noVNC)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  interactive-mac:
+    name: Live Interactive macOS Apple Silicon Session
+    runs-on: macos-14
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Build All 6 Suite Targets (Release)
+        working-directory: macos
+        run: |
+          swift build -c release
+
+      - name: Assemble Apps on Mac Desktop
+        working-directory: macos
+        run: |
+          APPS=("ToolTipDashboard" "ToolTipAssistant" "ToolTipTranslate" "ToolTipAura" "ToolTipVoice" "ToolTipBridge")
+
+          for APP in "${APPS[@]}"; do
+            echo "Assembler: Ensamblando $APP.app..."
+            mkdir -p "$APP.app/Contents/MacOS"
+            mkdir -p "$APP.app/Contents/Resources"
+            cp ".build/release/$APP" "$APP.app/Contents/MacOS/$APP"
+            chmod +x "$APP.app/Contents/MacOS/$APP"
+            cp "Plists/$APP-Info.plist" "$APP.app/Contents/Info.plist"
+          done
+
+          # Embed Helpers inside ToolTipDashboard
+          mkdir -p "ToolTipDashboard.app/Contents/Helpers"
+          cp -R "ToolTipAssistant.app" "ToolTipDashboard.app/Contents/Helpers/"
+          cp -R "ToolTipTranslate.app" "ToolTipDashboard.app/Contents/Helpers/"
+          cp -R "ToolTipAura.app" "ToolTipDashboard.app/Contents/Helpers/"
+          cp -R "ToolTipVoice.app" "ToolTipDashboard.app/Contents/Helpers/"
+          cp -R "ToolTipBridge.app" "ToolTipDashboard.app/Contents/Helpers/"
+
+          # Copiar todas las apps al Escritorio real de la sesión macOS
+          mkdir -p /Users/runner/Desktop
+          cp -R ToolTipDashboard.app /Users/runner/Desktop/
+          cp -R ToolTipAssistant.app /Users/runner/Desktop/
+          cp -R ToolTipTranslate.app /Users/runner/Desktop/
+          cp -R ToolTipAura.app /Users/runner/Desktop/
+          cp -R ToolTipVoice.app /Users/runner/Desktop/
+          cp -R ToolTipBridge.app /Users/runner/Desktop/
+
+      - name: Configure macOS Screen Sharing (VNC)
+        run: |
+          # Activar servicio de pantalla remota nativo con password ToolTip2026
+          sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart \
+            -activate -configure -access -on \
+            -clientopts -setvnclegacy -vnclegacy yes \
+            -clientopts -setvncpw -vncpw ToolTip2026 \
+            -restart -agent -privs -all
+
+      - name: Setup noVNC Web Gateway & Cloudflare Tunnel
+        run: |
+          # Clonar interfaz web noVNC y levantar websockify hacia VNC local (5900)
+          git clone --depth 1 https://github.com/novnc/noVNC.git /tmp/noVNC
+          python3 -m pip install websockify
+          python3 -m websockify --web /tmp/noVNC 6080 localhost:5900 &
+
+          # Instalar y levantar túnel de Cloudflare hacia noVNC
+          brew install cloudflared
+          cloudflared tunnel --url http://localhost:6080 > /tmp/tunnel.log 2>&1 &
+          
+          # Esperar a que se asigne la URL pública
+          sleep 10
+          cat /tmp/tunnel.log
+
+          TUNNEL_URL=""
+          for i in {1..20}; do
+            TUNNEL_URL=$(grep -o 'https://[-a-zA-Z0-9]*\.trycloudflare\.com' /tmp/tunnel.log | head -n 1)
+            if [ -n "$TUNNEL_URL" ]; then
+              break
+            fi
+            sleep 2
+          done
+
+          echo ""
+          echo "=============================================================================="
+          echo "🍏 ¡TU MAC INTERACTIVO EN LA NUBE ESTÁ LISTO!"
+          echo "=============================================================================="
+          echo "Abre este enlace en tu navegador (Chrome / Edge / Firefox):"
+          echo ""
+          echo "👉  $TUNNEL_URL/vnc.html?autoconnect=true&resize=remote"
+          echo ""
+          echo "Contraseña de acceso VNC: ToolTip2026"
+          echo "=============================================================================="
+          echo ""
+
+          # Mantener la sesión activa durante 55 minutos para que el usuario pueda probar
+          echo "Sesión interactiva activa. Presiona Cancelar en GitHub Actions cuando termines."
+          sleep 3300
