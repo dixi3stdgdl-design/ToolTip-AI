@@ -51,7 +51,15 @@ jobs:
           cp -R "ToolTipBridge.app" "ToolTipDashboard.app/Contents/Helpers/"
 
           # Empaquetar la suite completa con preservación de metadata
-          ditto -c -k ToolTipDashboard.app ToolTipAssistant.app ToolTipTranslate.app ToolTipAura.app ToolTipVoice.app ToolTipBridge.app ToolTipAI-macOS-Complete-Suite.zip
+          mkdir -p dist
+          cp -R ToolTipDashboard.app dist/
+          cp -R ToolTipAssistant.app dist/
+          cp -R ToolTipTranslate.app dist/
+          cp -R ToolTipAura.app dist/
+          cp -R ToolTipVoice.app dist/
+          cp -R ToolTipBridge.app dist/
+
+          ditto -c -k --keepParent dist ToolTipAI-macOS-Complete-Suite.zip
 
       - name: Upload Suite Build Artifact
         uses: actions/upload-artifact@v4
