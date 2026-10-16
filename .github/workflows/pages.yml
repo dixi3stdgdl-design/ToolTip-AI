@@ -33,9 +33,7 @@ jobs:
           cp 404.html _site/ 2>/dev/null || true
           cp privacy.html _site/
           cp styles.css _site/
-          cp styles-interactive.css _site/ 2>/dev/null || true
           cp app.js _site/
-          cp interactive-sim.js _site/ 2>/dev/null || true
           cp favicon.ico _site/
           cp icon.png _site/
           cp CNAME _site/
