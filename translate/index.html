@@ -38,7 +38,6 @@
   <link rel="icon" href="/favicon.ico">
   <link rel="icon" type="image/png" href="/icon.png">
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/styles-interactive.css">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WSGPY3DK4Z"></script>
   <script>
@@ -114,64 +113,6 @@
           <li><strong>Licencia</strong> de por vida</li>
           <li><strong>0</strong> servidores intermediarios</li>
         </ul>
-      </div>
-
-      <!-- SIMULADOR INTERACTIVO CON MOVIMIENTO Y HUD FLOTANTE -->
-      <div class="interactive-desktop reveal d4">
-        <div class="desktop-header">
-          <div class="desktop-dots">
-            <span class="desktop-dot red"></span>
-            <span class="desktop-dot yellow"></span>
-            <span class="desktop-dot green"></span>
-          </div>
-          <div class="desktop-title">
-            <span>🪟 Windows 11 · Simulación de Pantalla en Vivo</span>
-          </div>
-          <div style="font-size:0.75rem; color:var(--teal); font-weight:700;">OCR ACTIVO [DWELL]</div>
-        </div>
-
-        <div class="desktop-body">
-          <div class="simulation-zone" data-sim-type="translate" style="position:relative; min-height: 280px;">
-            <p style="font-size:0.8rem; color:var(--ink3); margin-bottom:1rem; text-transform:uppercase; letter-spacing:0.05em;">
-              👉 Pasa el cursor sobre el texto técnico en pantalla:
-            </p>
-            <div style="font-family:monospace; background:rgba(255,255,255,0.03); padding:1rem; border-radius:8px; line-height:1.8; color:#cbd5e1; font-size:0.95rem;">
-              <span style="color:#f87171;">System Error 0x800F0954:</span><br>
-              "The requested package cannot be installed because the Windows Update service is restricted by policy."<br>
-              <span style="color:#94a3b8; font-size:0.85rem;">[Cliquez ici pour vérifier les autorisations système de la stratégie de groupe]</span>
-            </div>
-
-            <!-- HUD Flotante que sigue el movimiento del cursor -->
-            <div class="floating-hud">
-              <div class="hud-badge">ToolTip AI · Traducción Directa</div>
-              <p style="font-size:0.88rem; font-weight:600; color:#fff; margin-bottom:0.3rem;">
-                "Haga clic aquí para verificar los permisos del sistema en la política de grupo"
-              </p>
-              <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:var(--teal);">
-                <span>Fuente: Francés (OCR 99.4%)</span>
-                <span>Latencia: 14ms</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Panel Inteligente Lateral -->
-          <div class="smart-panel">
-            <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:1rem;">
-              <span style="font-size:1.4rem;">⚡</span>
-              <div>
-                <strong style="color:var(--teal); font-size:0.95rem; display:block;">Detección sin fricción</strong>
-                <span style="font-size:0.8rem; color:var(--ink3);">Sin seleccionar ni cambiar de ventana</span>
-              </div>
-            </div>
-            <p style="font-size:0.86rem; color:var(--ink2); line-height:1.6; margin-bottom:1.2rem;">
-              La capa nativa de WPF intercepta la coordenada del cursor. Al detenerte 300ms, el OCR procesa únicamente el bounding box exacto y proyecta el resultado cifrado en tu pantalla.
-            </p>
-            <div style="background:rgba(255,255,255,0.03); border:1px solid var(--line); border-radius:8px; padding:0.8rem; font-size:0.78rem; display:flex; justify-content:space-between;">
-              <span style="color:var(--ink3);">Consumo RAM: <strong>~22 MB</strong></span>
-              <span style="color:var(--teal);">GPU Acelerado: <strong>DirectX</strong></span>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -269,6 +210,5 @@
   </footer>
 
   <script src="/app.js"></script>
-  <script src="/interactive-sim.js"></script>
 </body>
 </html>
