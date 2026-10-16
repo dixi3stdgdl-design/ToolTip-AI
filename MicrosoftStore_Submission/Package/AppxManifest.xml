@@ -9,7 +9,7 @@
   <Identity
     Name="Dixi3Lqbs.ToolTipAIAssistant"
     Publisher="CN=5A4F9620-3DD9-4496-B7BF-3252D9BF4477"
-    Version="1.1.8.0"
+    Version="1.1.9.0"
     ProcessorArchitecture="x64" />
 
   <Properties>

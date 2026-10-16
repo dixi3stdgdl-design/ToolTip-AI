@@ -6,7 +6,8 @@ namespace ToolTipAI;
 
 public static class VaultManager
 {
-    private static readonly byte[] OptionalEntropy = Encoding.UTF8.GetBytes("TeachMeAI.Vault.Entropy.v1");
+    private static readonly byte[] PrimaryEntropy = Encoding.UTF8.GetBytes("ToolTipAI.Vault.Entropy.v1");
+    private static readonly byte[] LegacyEntropy = Encoding.UTF8.GetBytes("TeachMeAI.Vault.Entropy.v1");
 
     public static string EncryptSecret(string plainText)
     {
@@ -17,7 +18,7 @@ public static class VaultManager
             byte[] plainBytes = Encoding.UTF8.GetBytes(plainText);
             byte[] encryptedBytes = ProtectedData.Protect(
                 plainBytes,
-                OptionalEntropy,
+                PrimaryEntropy,
                 DataProtectionScope.CurrentUser
             );
             return Convert.ToBase64String(encryptedBytes);
@@ -39,12 +40,25 @@ public static class VaultManager
         try
         {
             byte[] encryptedBytes = Convert.FromBase64String(cipherText);
-            byte[] plainBytes = ProtectedData.Unprotect(
-                encryptedBytes,
-                OptionalEntropy,
-                DataProtectionScope.CurrentUser
-            );
-            return Encoding.UTF8.GetString(plainBytes);
+            try
+            {
+                byte[] plainBytes = ProtectedData.Unprotect(
+                    encryptedBytes,
+                    PrimaryEntropy,
+                    DataProtectionScope.CurrentUser
+                );
+                return Encoding.UTF8.GetString(plainBytes);
+            }
+            catch
+            {
+                // Fallback for seamless migration of older vault keys
+                byte[] legacyBytes = ProtectedData.Unprotect(
+                    encryptedBytes,
+                    LegacyEntropy,
+                    DataProtectionScope.CurrentUser
+                );
+                return Encoding.UTF8.GetString(legacyBytes);
+            }
         }
         catch
         {
