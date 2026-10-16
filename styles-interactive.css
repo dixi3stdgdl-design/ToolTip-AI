@@ -1,255 +1,331 @@
 /* ==========================================================================
-   TOOLTIP-AI 2.0: POLISHED DESIGN SYSTEM (GUIDED BY IMPECCABLE)
-   Elegancia sobria, sombras de elevación neutras, contraste óptico Windows 11
+   TOOLTIP-AI FLUID INTERACTIVE ENGINE (WINDOWS 11 NATIVE MICA / FLUENT)
    ========================================================================== */
 
 :root {
-  --neon-translate: #22d3ee;
-  --neon-voice: #c084fc;
-  --neon-aura: #f59e0b;
-  --neon-assistant: #38bdf8;
-  --panel-glass: rgba(13, 20, 32, 0.88);
-  --panel-border: rgba(255, 255, 255, 0.12);
-  --elevation-high: 0 24px 64px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08);
-  --elevation-medium: 0 12px 32px -8px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --w11-bg: #030712;
+  --w11-surface: rgba(15, 23, 42, 0.75);
+  --w11-surface-solid: #0f172a;
+  --w11-mica: rgba(30, 41, 59, 0.6);
+  --w11-border: rgba(255, 255, 255, 0.12);
+  --w11-border-bright: rgba(255, 255, 255, 0.22);
+  --w11-accent-cyan: #06b6d4;
+  --w11-accent-blue: #3b82f6;
+  --w11-accent-purple: #a855f7;
+  --w11-accent-amber: #f59e0b;
+  --w11-text-main: #f8fafc;
+  --w11-text-muted: #94a3b8;
+  --w11-font: "Segoe UI Variable Text", "Inter", -apple-system, sans-serif;
 }
 
-@keyframes radarSweep {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* Cursor Beam: Haz de luz reactivo que sigue el cursor */
+.cursor-beam-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  overflow: hidden;
 }
 
-@keyframes soundWave {
-  0%, 100% { height: 14px; }
-  50% { height: 46px; }
+.cursor-beam-light {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, rgba(59, 130, 246, 0.05) 45%, transparent 70%);
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease;
+  opacity: 0;
 }
 
-/* Contenedor Interactivo de Escritorio */
-.interactive-desktop {
+/* Ventana Maestra de Windows 11 Fluent */
+.w11-window {
   position: relative;
   width: 100%;
-  max-width: 1080px;
+  max-width: 1140px;
   margin: 2.5rem auto;
-  border-radius: 18px;
-  background: var(--panel-glass);
-  backdrop-filter: blur(28px) saturate(160%);
-  border: 1px solid var(--panel-border);
-  box-shadow: var(--elevation-high);
+  border-radius: 12px;
+  background: var(--w11-surface);
+  backdrop-filter: blur(32px) saturate(180%);
+  border: 1px solid var(--w11-border);
+  box-shadow: 0 32px 80px -16px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.08);
   overflow: hidden;
-  transition: border-color 0.3s ease;
 }
 
-.desktop-header {
+/* Barra de Título Auténtica de Windows 11 */
+.w11-titlebar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.85rem 1.4rem;
-  background: rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid var(--line);
+  height: 40px;
+  padding: 0 0 0 1rem;
+  background: rgba(15, 23, 42, 0.85);
+  border-bottom: 1px solid var(--w11-border);
+  user-select: none;
 }
 
-.desktop-dots {
-  display: flex;
-  gap: 7px;
-}
-.desktop-dot {
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-}
-.desktop-dot.red { background: #ef4444; }
-.desktop-dot.yellow { background: #f59e0b; }
-.desktop-dot.green { background: #10b981; }
-
-.desktop-title {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--ink2);
-  letter-spacing: 0.03em;
+.w11-title {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--w11-text-main);
 }
 
-.desktop-body {
-  position: relative;
-  padding: 2.2rem;
-  min-height: 420px;
-  display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  gap: 2rem;
+.w11-title img {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+/* Pestañas de la Suite integradas en la barra de título */
+.w11-tabs {
+  display: flex;
+  height: 100%;
+  margin-left: 1.5rem;
+  gap: 2px;
+}
+
+.w11-tab {
+  display: flex;
   align-items: center;
+  gap: 8px;
+  padding: 0 1.2rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--w11-text-muted);
+  background: transparent;
+  border-right: 1px solid transparent;
+  border-left: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
 }
 
-@media (max-width: 900px) {
-  .desktop-body {
+.w11-tab:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--w11-text-main);
+}
+
+.w11-tab.active {
+  background: rgba(30, 41, 59, 0.8);
+  color: var(--w11-text-main);
+  border-color: var(--w11-border);
+}
+
+.w11-tab.active::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--w11-accent-cyan);
+}
+
+/* Botones de Ventana Windows 11: Minimizar, Maximizar, Cerrar */
+.w11-controls {
+  display: flex;
+  height: 100%;
+}
+
+.w11-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 100%;
+  color: var(--w11-text-muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  font-size: 0.75rem;
+}
+
+.w11-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--w11-text-main);
+}
+
+.w11-btn.close:hover {
+  background: #e81123;
+  color: #fff;
+}
+
+/* Área de Trabajo de la Ventana */
+.w11-content {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  min-height: 480px;
+  position: relative;
+}
+
+@media (max-width: 960px) {
+  .w11-content {
     grid-template-columns: 1fr;
-    padding: 1.5rem;
   }
 }
 
-/* Panel Inteligente */
-.smart-panel {
-  background: rgba(18, 26, 40, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
-  padding: 1.6rem;
-  box-shadow: var(--elevation-medium);
+/* Lienzo de Simulación de Pantalla */
+.w11-viewport {
   position: relative;
-  overflow: hidden;
-}
-
-.smart-panel::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 1.5px;
-  background: linear-gradient(90deg, transparent, var(--neon-translate), transparent);
-}
-
-/* Zona de Simulación (Hover Target) */
-.simulation-zone {
-  background: rgba(0, 0, 0, 0.45);
-  border: 1px dashed rgba(255, 255, 255, 0.22);
-  border-radius: 12px;
-  padding: 1.8rem;
-  position: relative;
+  padding: 2.5rem;
+  background: rgba(3, 7, 18, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   cursor: crosshair;
-  transition: border-color 0.25s ease, background 0.25s ease;
 }
 
-.simulation-zone:hover {
-  border-color: var(--neon-translate);
-  background: rgba(34, 211, 238, 0.03);
-}
-
-/* Tooltip HUD Flotante (Limpio y legible) */
-.floating-hud {
-  position: absolute;
-  z-index: 30;
-  background: rgba(8, 14, 24, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+/* Target de software sobre el cual el usuario pasa el mouse */
+.w11-app-canvas {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid var(--w11-border-bright);
   border-radius: 10px;
-  padding: 1rem 1.25rem;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
-  pointer-events: none;
-  transform: translate(18px, 18px);
-  transition: opacity 0.2s ease, transform 0.12s ease-out;
-  max-width: 320px;
+  padding: 1.8rem;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+  position: relative;
 }
 
-.hud-badge {
-  display: inline-flex;
+.w11-app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--w11-border);
+}
+
+.w11-app-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--w11-accent-cyan);
+}
+
+/* El HUD Auténtico de ToolTip AI (WPF Native Replicado) */
+.w11-tooltip-hud {
+  position: absolute;
+  z-index: 40;
+  width: 320px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid var(--w11-accent-cyan);
+  border-radius: 8px;
+  padding: 1.2rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(6, 182, 212, 0.25);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(20px, 20px);
+  transition: opacity 0.2s ease, transform 0.08s ease-out;
+}
+
+.w11-hud-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.w11-hud-status {
+  display: flex;
   align-items: center;
   gap: 6px;
   font-size: 0.72rem;
   font-weight: 700;
+  color: var(--w11-accent-cyan);
   text-transform: uppercase;
-  color: var(--neon-translate);
-  letter-spacing: 0.06em;
-  margin-bottom: 0.35rem;
 }
 
-.hud-badge::before {
-  content: "";
+.w11-hud-pulse {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--neon-translate);
+  background: var(--w11-accent-cyan);
 }
 
-/* Variantes Temáticas por Extensión */
-.theme-voice .smart-panel::before {
-  background: linear-gradient(90deg, transparent, var(--neon-voice), transparent);
-}
-.theme-voice .simulation-zone:hover {
-  border-color: var(--neon-voice);
-  background: rgba(192, 132, 252, 0.04);
-}
-.theme-voice .hud-badge { color: var(--neon-voice); }
-.theme-voice .hud-badge::before { background: var(--neon-voice); }
-
-.sound-bars {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  height: 56px;
-  margin: 1.4rem 0;
-}
-.sound-bar {
-  width: 5px;
-  border-radius: 3px;
-  background: var(--neon-voice);
-  animation: soundWave 1.2s ease-in-out infinite alternate;
-}
-.sound-bar:nth-child(1) { animation-delay: 0.1s; height: 16px; }
-.sound-bar:nth-child(2) { animation-delay: 0.4s; height: 38px; }
-.sound-bar:nth-child(3) { animation-delay: 0.2s; height: 46px; }
-.sound-bar:nth-child(4) { animation-delay: 0.6s; height: 26px; }
-.sound-bar:nth-child(5) { animation-delay: 0.3s; height: 42px; }
-.sound-bar:nth-child(6) { animation-delay: 0.5s; height: 20px; }
-
-.theme-aura .smart-panel::before {
-  background: linear-gradient(90deg, transparent, var(--neon-aura), transparent);
-}
-.theme-aura .simulation-zone:hover {
-  border-color: var(--neon-aura);
-  background: rgba(245, 158, 11, 0.04);
-}
-.theme-aura .hud-badge { color: var(--neon-aura); }
-.theme-aura .hud-badge::before { background: var(--neon-aura); }
-
-.radar-scanner {
-  position: relative;
-  width: 130px;
-  height: 130px;
-  margin: 1rem auto;
-  border-radius: 50%;
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-}
-.radar-sweep-arm {
-  position: absolute;
-  inset: 0;
-  background: conic-gradient(from 0deg, rgba(245, 158, 11, 0.35) 0deg, transparent 60deg);
-  border-radius: 50%;
-  animation: radarSweep 3s linear infinite;
-}
-
-/* Selector Rápido de Extensiones */
-.suite-switcher {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  background: rgba(255, 255, 255, 0.04);
-  padding: 0.3rem 0.45rem;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-}
-.suite-switcher a {
-  padding: 0.35rem 0.85rem;
-  border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--ink3);
-  transition: color 0.15s ease, background 0.15s ease;
-}
-.suite-switcher a:hover {
-  color: var(--ink);
-  background: rgba(255, 255, 255, 0.08);
-}
-.suite-switcher a.active {
-  color: #042f2a;
-  background: var(--teal);
-}
-.suite-switcher a.active.voice {
+.w11-hud-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.5;
   color: #fff;
-  background: var(--neon-voice);
+  margin-bottom: 0.8rem;
 }
-.suite-switcher a.active.aura {
-  color: #000;
-  background: var(--neon-aura);
+
+.w11-hud-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--w11-text-muted);
+  border-top: 1px solid var(--w11-border);
+  padding-top: 0.6rem;
+}
+
+/* Panel de Telemetría Lateral */
+.w11-sidebar {
+  background: rgba(15, 23, 42, 0.6);
+  border-left: 1px solid var(--w11-border);
+  padding: 2rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.w11-metric-group {
+  margin-bottom: 1.6rem;
+}
+
+.w11-metric-label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--w11-text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.w11-metric-value {
+  font-family: monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--w11-text-main);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.w11-metric-sub {
+  font-size: 0.78rem;
+  color: var(--w11-accent-cyan);
+}
+
+.w11-badge-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.w11-spec-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.8rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--w11-border);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: var(--w11-text-muted);
+}
+
+.w11-spec-badge strong {
+  color: var(--w11-text-main);
+}
+
+/* Control de Audio Ducking Interactivo en Modo Voice */
+.w11-ducking-slider {
+  width: 100%;
+  accent-color: var(--w11-accent-purple);
+  cursor: pointer;
+  margin: 1rem 0;
 }

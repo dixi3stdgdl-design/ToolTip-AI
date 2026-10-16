@@ -1,103 +1,120 @@
 /**
- * Tooltip AI — Motor Interactivo de Paneles y Simuladores en Vivo
+ * Tooltip AI — Motor Fluent de Windows 11 & CursorBeam en Tiempo Real
  */
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Detección del tipo de simulador
-  initInteractiveSimulators();
-
-  // 2. Registro de eventos para Clarity y GA4
-  initTrackingEvents();
+  initCursorBeam();
+  initFluentWindowModes();
+  initWASAPIDucking();
 });
 
-function initInteractiveSimulators() {
-  const simZones = document.querySelectorAll('.simulation-zone');
+// Haz de luz que proyecta ToolTip AI bajo el cursor (CursorBeam)
+function initCursorBeam() {
+  const viewports = document.querySelectorAll('.w11-viewport');
   
-  simZones.forEach(zone => {
-    const hud = zone.querySelector('.floating-hud');
-    if (!hud) return;
+  viewports.forEach(vp => {
+    const beam = vp.querySelector('.cursor-beam-light');
+    const hud = vp.querySelector('.w11-tooltip-hud');
 
-    zone.addEventListener('mousemove', (e) => {
-      const rect = zone.getBoundingClientRect();
+    vp.addEventListener('mouseenter', () => {
+      if (beam) beam.style.opacity = '1';
+      if (hud) hud.style.opacity = '1';
+    });
+
+    vp.addEventListener('mousemove', (e) => {
+      const rect = vp.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
-      hud.style.opacity = '1';
-      hud.style.transform = `translate(${Math.min(x + 15, rect.width - 280)}px, ${Math.min(y + 15, rect.height - 120)}px)`;
-    });
+      if (beam) {
+        beam.style.left = `${x}px`;
+        beam.style.top = `${y}px`;
+      }
 
-    zone.addEventListener('mouseleave', () => {
-      hud.style.opacity = '0.15';
-      hud.style.transform = 'translate(20px, 20px)';
-    });
-  });
-
-  // Simulador de Voz Interactivo
-  const voicePlayBtn = document.getElementById('testVoiceBtn');
-  if (voicePlayBtn) {
-    let isSpeaking = false;
-    voicePlayBtn.addEventListener('click', () => {
-      isSpeaking = !isSpeaking;
-      const wave = document.getElementById('voiceWaveform');
-      const duckingIndicator = document.getElementById('duckingIndicator');
-
-      if (isSpeaking) {
-        voicePlayBtn.textContent = '⏹ Pausar Lectura';
-        if (wave) wave.style.opacity = '1';
-        if (duckingIndicator) duckingIndicator.textContent = 'Atenuación Activa: Música bajó al 20%';
-
-        // Sintetizar voz si el navegador lo soporta
-        if ('speechSynthesis' in window) {
-          const sampleText = document.getElementById('voiceSampleText')?.textContent || "ToolTip AI Voice activado.";
-          const utter = new SpeechSynthesisUtterance(sampleText);
-          utter.lang = 'es-ES';
-          utter.onend = () => {
-            isSpeaking = false;
-            voicePlayBtn.textContent = '▶ Probar Lectura en Vivo';
-            if (wave) wave.style.opacity = '0.3';
-            if (duckingIndicator) duckingIndicator.textContent = 'En espera de voz';
-          };
-          window.speechSynthesis.speak(utter);
-        }
-      } else {
-        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-        voicePlayBtn.textContent = '▶ Probar Lectura en Vivo';
-        if (wave) wave.style.opacity = '0.3';
-        if (duckingIndicator) duckingIndicator.textContent = 'En espera de voz';
+      if (hud) {
+        const maxX = rect.width - 340;
+        const maxY = rect.height - 180;
+        const targetX = Math.max(15, Math.min(x + 20, maxX));
+        const targetY = Math.max(15, Math.min(y + 20, maxY));
+        hud.style.transform = `translate(${targetX}px, ${targetY}px)`;
       }
     });
-  }
+
+    vp.addEventListener('mouseleave', () => {
+      if (beam) beam.style.opacity = '0';
+      if (hud) hud.style.opacity = '0';
+    });
+  });
 }
 
-function initTrackingEvents() {
-  // Click a la Microsoft Store
-  document.querySelectorAll('a[href^="ms-windows-store"]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const productId = new URL(btn.href).searchParams.get('productid') || 'general';
-      
-      // GA4 Event
-      if (typeof gtag === 'function') {
-        gtag('event', 'click_ms_store', {
-          event_category: 'outbound_conversion',
-          product_id: productId
-        });
-      }
+// Selector Dinámico de Módulos dentro de la Ventana de Windows 11
+function initFluentWindowModes() {
+  const tabs = document.querySelectorAll('.w11-tab');
+  const hudStatus = document.getElementById('hudStatusText');
+  const hudBody = document.getElementById('hudBodyText');
+  const hudMeta = document.getElementById('hudMetaText');
+  const appTag = document.getElementById('appTagText');
+  const appSample = document.getElementById('appSampleText');
 
-      // Clarity Custom Event
-      if (typeof clarity === 'function') {
-        clarity('event', 'ms_store_click');
-      }
+  const modes = {
+    translate: {
+      name: 'Translate',
+      tag: 'OCR Óptico · Bounding Box Detectado',
+      status: 'Traducción Directa [Dwell]',
+      body: '"Haga clic aquí para verificar los permisos del sistema en la directiva de seguridad."',
+      meta: 'Fuente: Francés (99.8%) · Latencia: 14ms',
+      sample: '<span style="color:#f87171;">System Code 0x80070005:</span><br>"Accès refusé. Vous devez disposer des autorisations nécessaires pour exécuter cette application."',
+      accent: '#06b6d4'
+    },
+    voice: {
+      name: 'Voice',
+      tag: 'WASAPI CoreAudio · Ducking Activo',
+      status: 'Lectura con Atenuación',
+      body: 'Leyendo síntesis de voz clara. La música de Spotify se atenuó automáticamente al 20%.',
+      meta: 'Atenuación: -18 dB · Salida: Auriculares (Realtek Audio)',
+      sample: '<span style="color:#c084fc;">Audio Ducking Session:</span><br>"Se detectó un cambio en el registro del sistema. Presione Ctrl+Shift+V para escuchar el informe completo."',
+      accent: '#a855f7'
+    },
+    aura: {
+      name: 'Aura',
+      tag: 'UIAutomation Tree · Radar Preventivo',
+      status: 'Aura Shield · Advertencia',
+      body: 'Precaución: El enlace apunta a un ejecutable no firmado (.exe) con elevación UAC.',
+      meta: 'Firmado: No · Riesgo: Medio · Acción: Inspeccionar',
+      sample: '<span style="color:#f59e0b;">Control Inspector:</span><br>&lt;Button Name="Descargar_Setup_Gratis.exe" ElevationRequired="True" /&gt;',
+      accent: '#f59e0b'
+    }
+  };
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const modeKey = tab.dataset.mode;
+      const data = modes[modeKey];
+      if (!data) return;
+
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      if (hudStatus) hudStatus.textContent = data.status;
+      if (hudBody) hudBody.textContent = data.body;
+      if (hudMeta) hudMeta.textContent = data.meta;
+      if (appTag) appTag.textContent = data.tag;
+      if (appSample) appSample.innerHTML = data.sample;
+
+      const hud = document.querySelector('.w11-tooltip-hud');
+      if (hud) hud.style.borderColor = data.accent;
     });
   });
+}
 
-  // Pruebas en simuladores
-  document.querySelectorAll('.simulation-zone').forEach(sim => {
-    sim.addEventListener('mouseenter', () => {
-      const simType = sim.dataset.simType || 'general';
-      if (typeof gtag === 'function') {
-        gtag('event', 'interact_simulator', {
-          simulator_type: simType
-        });
-      }
-    }, { once: true });
-  });
+// Simulador de Audio Ducking Dinámico
+function initWASAPIDucking() {
+  const slider = document.getElementById('duckingSlider');
+  const levelDisplay = document.getElementById('duckingLevelDisplay');
+
+  if (slider && levelDisplay) {
+    slider.addEventListener('input', (e) => {
+      const val = e.target.value;
+      levelDisplay.textContent = `-${val} dB`;
+    });
+  }
 }
